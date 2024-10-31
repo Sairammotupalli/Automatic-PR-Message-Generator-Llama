@@ -14,17 +14,13 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history to allow diffing with main
 
-      # Step 1: Capture the diff output as a base64-encoded environment variable
+      # Step 1: Capture the diff output into a file
       - name: Generate PR diff content
         id: generate_diff
         run: |
           echo "Running git diff between the PR branch and main..."
-          DIFF_CONTENT=$(git diff origin/main...HEAD | base64)  # Encode diff as base64
-          echo "Diff content captured (base64-encoded):"
-          echo "$DIFF_CONTENT"
-          
-          # Set DIFF_CONTENT as a base64-encoded environment variable
-          echo "DIFF_CONTENT=$DIFF_CONTENT" >> $GITHUB_ENV
+          git diff origin/main...HEAD > diff_content.txt  # Save diff to a file
+          echo "Diff content saved to diff_content.txt"
 
       # Step 2: Set up Python Environment and Install Dependencies
       - name: Set up Python Environment
@@ -37,18 +33,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 3: Run main.py, decoding DIFF_CONTENT in the script
+      # Step 3: Run main.py, passing the diff file as an argument
       - name: Generate PR Description
         id: generate_pr_description
         env:
           LLAMA_API_URL: "https://abcd1234.ngrok.io/generate"  # Replace with your ngrok URL
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DIFF_CONTENT: ${{ env.DIFF_CONTENT }}
         run: |
-          echo "Decoding DIFF_CONTENT passed to main.py:"
-          DECODED_DIFF_CONTENT=$(echo "${DIFF_CONTENT}" | base64 --decode)  # Decode diff content
-          echo "$DECODED_DIFF_CONTENT"  # Print the decoded DIFF_CONTENT for debugging
-          python main.py "$DECODED_DIFF_CONTENT" "${{ github.event.pull_request.number }}"
+          echo "Running main.py with diff_content.txt"
+          python main.py "diff_content.txt" "${{ github.event.pull_request.number }}"
         shell: bash
 
       # Step 4: Update the Pull Request Body directly
