@@ -11,13 +11,15 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history to allow diffing with main
 
       # Step 1: Capture the diff output directly as an environment variable
       - name: Generate PR diff content
         id: generate_diff
         run: |
-          echo "Running git diff..."
-          DIFF_CONTENT=$(git diff)
+          echo "Running git diff between the PR branch and main..."
+          DIFF_CONTENT=$(git diff origin/main...HEAD)  # Compare with main branch
           echo "Diff content captured:"
           echo "$DIFF_CONTENT"
           
