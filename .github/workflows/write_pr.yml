@@ -14,16 +14,16 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history to allow diffing with main
 
-      # Step 1: Capture the diff output directly as an environment variable
+      # Step 1: Capture the diff output as a base64-encoded environment variable
       - name: Generate PR diff content
         id: generate_diff
         run: |
           echo "Running git diff between the PR branch and main..."
-          DIFF_CONTENT=$(git diff origin/main...HEAD)  # Compare with main branch
-          echo "Diff content captured:"
+          DIFF_CONTENT=$(git diff origin/main...HEAD | base64)  # Encode diff as base64
+          echo "Diff content captured (base64-encoded):"
           echo "$DIFF_CONTENT"
           
-          # Set DIFF_CONTENT as an environment variable
+          # Set DIFF_CONTENT as a base64-encoded environment variable
           echo "DIFF_CONTENT=$DIFF_CONTENT" >> $GITHUB_ENV
 
       # Step 2: Set up Python Environment and Install Dependencies
@@ -37,7 +37,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 3: Run main.py with the diff content from the environment variable
+      # Step 3: Run main.py, decoding DIFF_CONTENT in the script
       - name: Generate PR Description
         id: generate_pr_description
         env:
@@ -45,9 +45,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DIFF_CONTENT: ${{ env.DIFF_CONTENT }}
         run: |
-          echo "DIFF_CONTENT passed to main.py:"
-          echo "${DIFF_CONTENT}"  # Print the DIFF_CONTENT for debugging
-          python main.py "${DIFF_CONTENT}" "${{ github.event.pull_request.number }}"
+          echo "Decoding DIFF_CONTENT passed to main.py:"
+          DECODED_DIFF_CONTENT=$(echo "${DIFF_CONTENT}" | base64 --decode)  # Decode diff content
+          echo "$DECODED_DIFF_CONTENT"  # Print the decoded DIFF_CONTENT for debugging
+          python main.py "$DECODED_DIFF_CONTENT" "${{ github.event.pull_request.number }}"
         shell: bash
 
       # Step 4: Update the Pull Request Body directly
