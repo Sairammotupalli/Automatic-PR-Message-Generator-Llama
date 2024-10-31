@@ -16,8 +16,12 @@ jobs:
       - name: Generate PR diff content
         id: generate_diff
         run: |
+          echo "Running git diff..."
+          git diff > diff_output.txt  # Save diff to a file for debug
+          cat diff_output.txt  # Print diff output for debugging
+          
           echo "DIFF_CONTENT<<EOF" >> $GITHUB_ENV
-          git diff >> $GITHUB_ENV
+          cat diff_output.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       # Step 2: Set up Python Environment and Install Dependencies
@@ -39,6 +43,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DIFF_CONTENT: ${{ env.DIFF_CONTENT }}
         run: |
+          echo "DIFF_CONTENT passed to main.py:"
+          echo "${DIFF_CONTENT}"  # Print the DIFF_CONTENT for debugging
           python main.py "${DIFF_CONTENT}" "${{ github.event.pull_request.number }}"
         shell: bash
 
