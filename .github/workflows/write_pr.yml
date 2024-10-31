@@ -1,4 +1,4 @@
-name: "Auto-Generate PR Description with Meta Llama API"
+name: "Auto-Generate PR Description with Local Ollama API"
 
 on:
   pull_request:
@@ -24,8 +24,7 @@ jobs:
 
       - name: Generate PR Description
         env:
-          LLAMA_API_KEY: ${{ secrets.LLAMA_API_KEY }}
-          LLAMA_API_URL: ${{ secrets.LLAMA_API_URL }}
+          LLAMA_API_URL: "https://97c8-2601-647-4601-2b0-6d8c-447a-3da8-a521.ngrok-free.app"  # Replace with your ngrok URL
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python main.py --diff_file diff.txt --output_file output.txt --pr_file pr.json
