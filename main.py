@@ -24,20 +24,16 @@ def main(diff_file_path, pr_number):
     pr_body_generator = PrBodyGenerator(prompt=prompt)
     pr_body_generator.generate_body()
 
-    # Step 3: Output the PR body
-    print(pr_body_generator.body)  # Output directly for GitHub Actions to capture
-
-if __name__ == "__main__":
-    diff_file_path = sys.argv[1]  # Take diff file path as first argument
-    pr_number = sys.argv[2]       # Take PR number as second argument
-    main(diff_file_path, pr_number)
-
+    # Step 3: Return the PR body text
+    return pr_body_generator.body
 
 if __name__ == "__main__":
     diff_file_path = sys.argv[1]  # Take diff file path as the first argument
     pr_number = sys.argv[2]       # Take PR number as the second argument
-    main(diff_file_path, pr_number)
+
+    # Call main and get the generated PR description
+    pr_body = main(diff_file_path, pr_number)
 
     # Save the generated PR description to a file
     with open("pr_description.txt", "w") as f:
-        f.write(pr_body_generator.body)
+        f.write(pr_body)
