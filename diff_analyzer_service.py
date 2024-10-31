@@ -1,31 +1,40 @@
-from diff_analysis import analyze_diff
-
 class DiffAnalyzerService:
     """
-    Service class for analyzing a diff file and categorizing changes into added, removed, and modified sections.
+    Service to analyze the diff content and produce a structured analysis.
     """
 
-    def __init__(self, diff_file):
+    def __init__(self, diff_content):
         """
-        Initializes the service with the path to a diff file.
-        
+        Initializes the diff analyzer with diff content.
+
         Args:
-            diff_file (str): The path to the diff file to analyze.
+            diff_content (str): The string content of the diff.
         """
-        self.diff_file = diff_file
+        self.diff_content = diff_content
 
     def analyse_diff(self):
         """
-        Reads the diff file, analyzes the content, and returns structured change data.
+        Analyzes the diff content and returns a structured summary.
 
         Returns:
-            dict: A dictionary with categorized changes ('added', 'removed', and 'modified') for each file.
+            dict: A dictionary containing analyzed diff data.
         """
-        # Read the diff content from the file
-        with open(self.diff_file, 'r') as file:
-            diff_content = file.read()
+        # Example implementation, structure as needed
+        # Here you could break down added, removed, and modified lines
+        analysis = {
+            "added": [],
+            "removed": [],
+            "modified": []
+        }
 
-        # Use analyze_diff function to process the diff content
-        changes = analyze_diff(diff_content)
-        
-        return changes
+        # Parse diff content to fill in the 'analysis' structure
+        # For demonstration purposes, we'll assume basic parsing
+        for line in self.diff_content.splitlines():
+            if line.startswith('+') and not line.startswith('+++'):
+                analysis["added"].append(line[1:].strip())
+            elif line.startswith('-') and not line.startswith('---'):
+                analysis["removed"].append(line[1:].strip())
+            elif not line.startswith(('+', '-')):
+                analysis["modified"].append(line.strip())
+
+        return analysis
