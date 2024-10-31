@@ -36,17 +36,21 @@ jobs:
           LLAMA_API_URL: "https://abcd1234.ngrok.io/generate"  # Replace with your ngrok URL
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python main.py --diff "${{ steps.generate_diff.outputs.diff }}" --pr_number "${{ github.event.pull_request.number }}"
-      
+          python main.py "${{ steps.generate_diff.outputs.diff }}" "${{ github.event.pull_request.number }}"
+        # Capture the output of main.py for use in the next step
+        shell: bash
+
       # Step 4: Update the Pull Request Body directly
       - name: Update Pull Request Body
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const fs = require('fs');
+            const pr_body = `${{ steps.generate_pr_description.outputs.pr_body }}`;
             github.rest.pulls.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
-              body: `${{ steps.generate_pr_description.outputs.pr_body }}`
+              body: pr_body
             });
