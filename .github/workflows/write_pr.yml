@@ -1,7 +1,6 @@
 on:
   pull_request:
 
-
 permissions:
   contents: read
   repository-projects: write
@@ -17,6 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Write Pull request
-        uses: ./ 
+        uses: ./
         with: 
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          llama3_api: ${{ secrets.llama3_api }}
