@@ -12,6 +12,9 @@ def generate_pr_description(diff_content, pr_number):
         "prompt": prompt
     })
 
+    # Log the entire response for debugging
+    print("Debug: Full response from FastAPI:", response.json())
+
     if response.status_code == 200:
         return response.json().get("generated_text", "No content from Llama.")
     else:
