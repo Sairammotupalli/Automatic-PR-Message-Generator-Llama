@@ -12,7 +12,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch full history to access origin/main
+          fetch-depth: 0
 
       - name: Generate PR diff content
         run: |
@@ -26,11 +26,12 @@ jobs:
           python-version: '3.9'
 
       - name: Generate PR Description
+        env:
+          LLAMA_API_URL: https://abcd1234.ngrok-free.app/generate  # Use your ngrok URL here
         run: |
           echo "Running main.py with diff_content.txt"
           python main.py "diff_content.txt" "${{ github.event.pull_request.number }}"
 
-      # Capture PR Description Output using environment file
       - name: Capture PR Description Output
         id: read_pr_description
         run: |
@@ -39,7 +40,6 @@ jobs:
           echo "$pr_body" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      # Update Pull Request Body using environment variable
       - name: Update Pull Request Body
         uses: actions/github-script@v6
         with:
