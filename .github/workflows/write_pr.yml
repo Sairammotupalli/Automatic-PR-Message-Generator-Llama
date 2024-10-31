@@ -1,8 +1,8 @@
-name: "Auto-Generate PR Description with Local Ollama API"
+name: Generate PR Description
 
 on:
   pull_request:
-    types: [opened, synchronize]  # Trigger on new or updated PRs
+    types: [opened, edited, synchronize]
 
 jobs:
   generate-pr-description:
@@ -25,9 +25,14 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests  # Install requests library
+
       - name: Generate PR Description
         env:
-          LLAMA_API_URL: https://4efb-174-62-74-251.ngrok-free.app/generate  # Use your ngrok URL here
+          LLAMA_API_URL: https://4efb-174-62-74-251.ngrok-free.app/generate  # Replace with your actual ngrok URL
         run: |
           echo "Running main.py with diff_content.txt"
           python main.py "diff_content.txt" "${{ github.event.pull_request.number }}"
