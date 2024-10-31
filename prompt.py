@@ -15,7 +15,6 @@ class Prompt:
         prompt_text += f"### PR Summary:\n{self.pr_summary}\n\n"
         prompt_text += "### Code Changes:\n"
 
-        # Iterate through each file change in the diff analysis
         for file_change in self.diff_analysis:
             file_name = file_change.get("file", "Unknown file")
             prompt_text += f"  - {file_name}:\n"
