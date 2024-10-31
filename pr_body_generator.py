@@ -1,21 +1,13 @@
 class PrBodyGenerator:
-    """
-    A class to generate a pull request body based on the provided prompt.
-    """
-
     def __init__(self, prompt):
         """
-        Initializes PrBodyGenerator with a prompt.
-
-        Args:
-            prompt (Prompt): The prompt to base the PR body on.
+        Initializes the PR body generator with a prompt.
         """
         self.prompt = prompt
         self.body = ""
 
     def generate_body(self):
         """
-        Generates the PR body based on the prompt text.
+        Generates the PR body by setting the prompt text as the body.
         """
-        # Here, we use the prompt's text to set the PR body
         self.body = self.prompt.text
