@@ -1,14 +1,20 @@
 #!/bin/sh -l
 
-# Check if llama3_api environment variable is set
-if [ -z "llama3_api" ]; then
-  echo "Error: llama3_api environment variable is not set."
+# Check for required environment variables
+if [ -z "$LLAMA_API_KEY" ] || [ -z "$LLAMA_API_URL" ]; then
+  echo "Error: Missing required environment variables LLAMA_API_KEY or LLAMA_API_URL"
   exit 1
 fi
 
-# Fetch the pull request diff and generate the PR body
-gh pr diff >> pr_diff.txt
-python main.py pr_diff.txt --output-file pr_body.txt
+# Default filenames if not provided
+DIFF_FILE="${1:-diff.txt}"
+OUTPUT_FILE="${2:-output.txt}"
+PR_FILE="${3:-pr.json}"
 
-# Update the pull request with the generated body
-gh pr edit -F pr_body.txt
+# Generate the PR description using main.py
+echo "Generating PR description..."
+python main.py --diff_file "$DIFF_FILE" --output_file "$OUTPUT_FILE" --pr_file "$PR_FILE"
+
+# Display generated PR description for debugging purposes
+echo "Generated PR description:"
+cat "$OUTPUT_FILE"
