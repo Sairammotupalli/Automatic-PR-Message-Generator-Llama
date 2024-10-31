@@ -11,17 +11,17 @@ class Prompt:
         """
         Create the prompt text based on the diff analysis.
         """
-        prompt_text = f"Generate a detailed pull request description based on the following information:\n\n"
+        prompt_text = "Generate a detailed pull request description based on the following information:\n\n"
         prompt_text += f"### PR Summary:\n{self.pr_summary}\n\n"
-        prompt_text += f"### Code Changes:\n"
+        prompt_text += "### Code Changes:\n"
 
         # Iterate through each file change in the diff analysis
         for file_change in self.diff_analysis:
-            file_name = file_change["file"]  # Access the file name
+            file_name = file_change.get("file", "Unknown file")
             prompt_text += f"  - {file_name}:\n"
-            for change in file_change["changes"]:
-                change_type = change["type"]
-                content = change["content"]
+            for change in file_change.get("changes", []):
+                change_type = change.get("type", "Unknown")
+                content = change.get("content", "")
                 prompt_text += f"    {change_type.capitalize()}: {content}\n"
 
         return prompt_text
