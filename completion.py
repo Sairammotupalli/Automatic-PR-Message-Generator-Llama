@@ -16,7 +16,7 @@ class Completion:
         self._state = self.State.UNCOMPLETE
         self._result = ""
         self._llama_api_key = os.getenv("llama3_api")
-        self._llama_api_url = "https://api.llama3.com/v1/completion"  # Example endpoint
+        self._llama_api_url = "https://console.llamaapi.com/1485d848-26ca-4092-a7bd-7c9f36ae8308/credits"  # Example endpoint
 
     @property
     def id(self):
