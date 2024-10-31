@@ -1,4 +1,4 @@
-name: "Auto-Generate PR Description"
+name: "Auto-Generate PR Description with Meta Llama API"
 
 on:
   pull_request:
