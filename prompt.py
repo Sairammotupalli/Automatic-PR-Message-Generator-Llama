@@ -1,3 +1,5 @@
+from typing import Union
+
 class Prompt:
     MAX_TOKENS = 2048
 
