@@ -33,7 +33,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 3: Run main.py, passing the diff file as an argument
+      # Step 3: Run main.py and generate the PR description
       - name: Generate PR Description
         id: generate_pr_description
         env:
@@ -42,9 +42,16 @@ jobs:
         run: |
           echo "Running main.py with diff_content.txt"
           python main.py "diff_content.txt" "${{ github.event.pull_request.number }}"
-        shell: bash
 
-      # Step 4: Update the Pull Request Body directly
+      # Step 4: Read PR Description from Output File
+      - name: Capture PR Description Output
+        id: read_pr_description
+        run: |
+          # Read the PR description from the output file and save it as a GitHub Actions output
+          pr_body=$(cat pr_description.txt)
+          echo "::set-output name=pr_body::$pr_body"
+
+      # Step 5: Update the Pull Request Body
       - name: Update Pull Request Body
         uses: actions/github-script@v6
         with:
@@ -54,5 +61,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
-              body: `${{ steps.generate_pr_description.outputs.pr_body }}`
+              body: `${{ steps.read_pr_description.outputs.pr_body }}`
             });
