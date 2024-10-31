@@ -1,11 +1,11 @@
 # action.yml
-name: 'AI powered Automatic PR Body Generation'
-description: 'Automatically generates a PR body based on the PR content using openai'
+name: 'AI-powered Automatic PR Body Generation'
+description: 'Automatically generates a PR body based on the PR content using Llama 3.2'
 branding:
   icon: 'git-pull-request'
   color: 'blue'
 inputs:
-  OPENAI_API_KEY:  # id of input
+  llama3_api:  # id of input
     required: true
 runs:
   using: "composite"
@@ -24,7 +24,7 @@ runs:
       run: python ${{ github.action_path }}/main.py pr_diff.txt --output-file pr_body.txt --pr-file pr_data.txt
       shell: bash
       env: 
-        OPENAI_API_KEY: ${{inputs.OPENAI_API_KEY}}
+        llama3_api: ${{inputs.llama3_api}}
     - run: gh pr edit ${{ github.head_ref }} -F pr_body.txt
       env:
         GITHUB_TOKEN: ${{ github.token }}
