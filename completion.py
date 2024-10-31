@@ -1,62 +1,77 @@
-from prompt import Prompt
-from uuid import uuid4
-import logging
-from enum import Enum
 import os
 import requests
+import logging
 
 class Completion:
-    class State(Enum):
-        UNCOMPLETE = "UNCOMPLETE"
-        COMPLETED = "COMPLETED"
+    """
+    This class interacts with a text generation API to generate a PR description based on a given prompt.
+    """
 
-    def __init__(self, prompt: Prompt):
-        self._id = f"hash(prompt)-{uuid4()}"
-        self._prompt = prompt
-        self._state = self.State.UNCOMPLETE
-        self._result = ""
-        self.api_key = os.getenv("LLAMA_API_KEY")  # Meta Llama API key from environment variables
-        self.api_url = os.getenv("LLAMA_API_URL")  # Meta Llama API endpoint from environment variables
+    def __init__(self, prompt):
+        """
+        Initializes the Completion object with a prompt.
 
-    @property
-    def id(self):
-        return self._id
+        Args:
+            prompt (str): The prompt text used to generate a response.
+        """
+        self.api_url = os.getenv("LLAMA_API_URL")  # API URL should be provided as an environment variable
+        self.prompt = prompt
+        self.result = ""
 
-    @property
-    def result(self):
-        return self._result
-
-    @property
-    def state(self):
-        return self._state
+        if not self.api_url:
+            raise ValueError("LLAMA_API_URL environment variable is not set")
 
     def _complete_prompt(self) -> str:
+        """
+        Sends the prompt to the text generation API and retrieves the generated text.
+
+        Returns:
+            str: The generated text from the API response.
+
+        Raises:
+            requests.RequestException: If there's an error in the API request.
+        """
+        logging.info(f"Sending prompt to API: {self.prompt}")
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
         data = {
-            "prompt": self._prompt.text,
-            "max_tokens": 1024,     # Adjust based on the desired length of the completion
-            "temperature": 0.7,     # Adjust for response randomness (0 is deterministic, higher is more random)
+            "prompt": self.prompt,
+            "model": "llama3"
         }
-
-        response = requests.post(self.api_url, headers=headers, json=data)
-        response.raise_for_status()  # Raises an error if the request fails
-
-        # Assuming the response structure matches OpenAI's API format
-        return response.json()["choices"][0]["text"]
+        
+        try:
+            response = requests.post(self.api_url, headers=headers, json=data)
+            response.raise_for_status()  # Raise an error for bad responses
+            generated_text = response.json()["generated_text"]
+            logging.info(f"Received generated text: {generated_text}")
+            return generated_text
+        except requests.RequestException as e:
+            logging.error(f"Error while generating text: {str(e)}")
+            raise
 
     def complete(self):
-        logging.info(f"completion_{self.id} - Completing prompt...")
-        logging.info(f"completion_{self.id} - prompt to complete: {self._prompt}")
-        self._result = self._complete_prompt()
-        self._state = self.State.COMPLETED
-        logging.info(f"completion_{self.id} - Complete")
-        logging.info(f"completion_{self.id} - Result: {self.result}")
+        """
+        Generates the completion text based on the prompt and updates the result attribute.
+        """
+        logging.info("Generating completion for prompt...")
+        self.result = self._complete_prompt()
+        logging.info(f"Completion result: {self.result}")
 
-    def __eq__(self, completion: "Completion"):
-        return self._id == completion._id
+    def get_result(self) -> str:
+        """
+        Returns the result of the completion.
+
+        Returns:
+            str: The generated completion result.
+        """
+        return self.result
 
     def __repr__(self):
-        return f"{self.id} - {self.state} - result: {self.result}"
+        """
+        Provides a string representation of the Completion object.
+
+        Returns:
+            str: String representation of the object.
+        """
+        return f"Completion(prompt='{self.prompt}', result='{self.result}')"
