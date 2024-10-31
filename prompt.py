@@ -1,48 +1,67 @@
-from typing import Union
-
 class Prompt:
-    MAX_TOKENS = 2048
+    """
+    Class for creating and managing prompt text for PR description generation.
+    """
 
-    def __init__(self, text: str, max_tokens: Union[int, None] = None):
-        self.max_tokens = max_tokens if max_tokens is not None else self.MAX_TOKENS
-        self._text = text
+    def __init__(self, diff_analysis, pr_summary):
+        """
+        Initializes the Prompt with diff analysis and PR summary details.
 
-    @property
-    def length(self):
-        # Approximate length based on characters rather than tokens
-        return len(self._text)
+        Args:
+            diff_analysis (dict): A dictionary with details about the code changes (added, removed, modified).
+            pr_summary (str): A brief summary of the PR, including metadata like title and author.
+        """
+        self.diff_analysis = diff_analysis
+        self.pr_summary = pr_summary
+        self.text = self._create_prompt_text()
 
-    @property
-    def text(self):
-        return self._text
+    def _create_prompt_text(self):
+        """
+        Constructs the prompt text based on the PR summary and diff analysis.
 
-    @property
-    def is_valid(self):
-        # Validate length by character count approximation
-        return self.length <= self.max_tokens
+        Returns:
+            str: The generated prompt text to be used for PR description generation.
+        """
+        prompt_text = "Generate a detailed pull request description based on the following information:\n\n"
+        prompt_text += "### PR Summary:\n"
+        prompt_text += f"{self.pr_summary}\n\n"
+        prompt_text += "### Code Changes:\n"
 
-    @property
-    def remaining_length(self):
-        return self.max_tokens - self.length
+        # Add added lines
+        if self.diff_analysis.get("added"):
+            prompt_text += "\n- **Added**:\n"
+            for file_change in self.diff_analysis["added"]:
+                prompt_text += f"  - {file_change['file']}:\n"
+                for line in file_change["lines"]:
+                    prompt_text += f"    - {line}\n"
 
-    def concat(self, prompt: "Prompt"):
-        max_tokens = min(self.max_tokens, prompt.max_tokens)
-        return Prompt(self.text + "\n" + prompt.text, max_tokens)
+        # Add removed lines
+        if self.diff_analysis.get("removed"):
+            prompt_text += "\n- **Removed**:\n"
+            for file_change in self.diff_analysis["removed"]:
+                prompt_text += f"  - {file_change['file']}:\n"
+                for line in file_change["lines"]:
+                    prompt_text += f"    - {line}\n"
 
-    def split(self):
-        if self.is_valid:
-            return [Prompt(self.text, self.max_tokens)]
+        # Add modified lines
+        if self.diff_analysis.get("modified"):
+            prompt_text += "\n- **Modified**:\n"
+            for file_change in self.diff_analysis["modified"]:
+                prompt_text += f"  - {file_change['file']}:\n"
+                prompt_text += "    - Added:\n"
+                for line in file_change["added"]:
+                    prompt_text += f"      - {line}\n"
+                prompt_text += "    - Removed:\n"
+                for line in file_change["removed"]:
+                    prompt_text += f"      - {line}\n"
 
-        prompts = []
-        for i in range(0, len(self._text), self.max_tokens):
-            partial_prompt = Prompt(self._text[i : i + self.max_tokens])
-            prompts.append(partial_prompt)
-        return prompts
+        return prompt_text
 
-    def wrap(self, wrapper: str):
-        prefix = Prompt(wrapper + "\n")
-        suffix = Prompt("\n" + wrapper)
-        return prefix.concat(self).concat(suffix)
+    def __str__(self):
+        """
+        Returns the full prompt text as a string.
 
-    def __repr__(self):
+        Returns:
+            str: The complete prompt text.
+        """
         return self.text
