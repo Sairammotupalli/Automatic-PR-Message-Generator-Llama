@@ -12,12 +12,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 1: Capture the diff output in a variable
+      # Step 1: Capture the diff output in an environment variable
       - name: Generate PR diff content
         id: generate_diff
         run: |
-          git diff > diff.txt
-          echo "::set-output name=diff::$(cat diff.txt)"
+          echo "DIFF_CONTENT<<EOF" >> $GITHUB_ENV
+          git diff >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       # Step 2: Set up Python Environment and Install Dependencies
       - name: Set up Python Environment
@@ -30,14 +31,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 3: Run main.py with the diff content from Step 1
+      # Step 3: Run main.py with the diff content from the environment variable
       - name: Generate PR Description
         id: generate_pr_description
         env:
           LLAMA_API_URL: "https://abcd1234.ngrok.io/generate"  # Replace with your ngrok URL
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DIFF_CONTENT: ${{ env.DIFF_CONTENT }}
         run: |
-          python main.py "${{ steps.generate_diff.outputs.diff }}" "${{ github.event.pull_request.number }}"
+          python main.py "${DIFF_CONTENT}" "${{ github.event.pull_request.number }}"
         shell: bash
 
       # Step 4: Update the Pull Request Body directly
@@ -46,11 +48,9 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            const pr_body = `${{ steps.generate_pr_description.outputs.pr_body }}`;
             github.rest.pulls.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
-              body: pr_body
+              body: `${{ steps.generate_pr_description.outputs.pr_body }}`
             });
