@@ -34,6 +34,9 @@ if __name__ == "__main__":
     # Call main and get the generated PR description
     pr_body = main(diff_file_path, pr_number)
 
+    # Debugging output: Print the generated PR description
+    print("Generated PR Body:\n", pr_body)
+
     # Save the generated PR description to a file
     with open("pr_description.txt", "w") as f:
         f.write(pr_body)
