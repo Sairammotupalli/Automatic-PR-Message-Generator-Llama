@@ -1,52 +1,76 @@
-from enum import Enum
-from completion import Completion
-from prompt import Prompt
-import uuid
-import inspect
+import re
 
-class DiffAnalysis:
-    DEFAULT_PROMPT = Prompt(
-        inspect.cleandoc(
-            """ 
-            Act like a very senior software developer caring for his coworkers. Summarize the changes introduced by the pull request whose diff is provided below. Each change should be described with a bullet point. Suggest refactoring and modifications to improve the code. 
+def analyze_diff(diff_content):
+    """
+    Analyzes the diff content and categorizes it into added, removed, and modified changes.
 
-            Here is the pull request diff:
-            """
-        )
-    )
+    Args:
+        diff_content (str): The raw diff content as a string.
 
-    class State(Enum):
-        NOT_STARTED = "NOT_STARTED"
-        FINISHED = "FINISHED"
+    Returns:
+        dict: A dictionary with categories 'added', 'removed', and 'modified' containing lists of changes.
+    """
+    changes = {
+        "added": [],
+        "removed": [],
+        "modified": []
+    }
 
-    def __init__(self, diff: str):
-        self.id = f"{hash(diff)}-{uuid.uuid4()}"
-        self.diff = diff
-        self.state = self.State.NOT_STARTED
-        self.completion_history = []
-        self.result = ""
+    # Split the diff content by lines for processing
+    lines = diff_content.splitlines()
+    file_changes = []
+    current_file = {"file_name": None, "added": [], "removed": []}
 
-    def exec(self):
-        # The default prompt is included in the max token limit
-        max_tokens = self.DEFAULT_PROMPT.remaining_length
+    # Regular expression to capture file name in the diff
+    file_header_pattern = re.compile(r"^diff --git a/(.+) b/(.+)")
 
-        diff_prompt = Prompt(self.diff, max_tokens)
-        splitted_diff_prompts = diff_prompt.split()
+    for line in lines:
+        # Detect file headers and reset the current file changes
+        match = file_header_pattern.match(line)
+        if match:
+            if current_file["file_name"]:
+                file_changes.append(current_file)
+            current_file = {
+                "file_name": match.group(1),
+                "added": [],
+                "removed": []
+            }
+            continue
 
-        print(f"Generating response for {len(splitted_diff_prompts)} prompts...")
-        diff_analysis = ""
-        for i, prompt in enumerate(splitted_diff_prompts):
-            completion = Completion(self.DEFAULT_PROMPT.concat(prompt.wrap("###")))
-            completion.complete()
-            self.completion_history.append(completion)
-            segment_text = completion.result
+        # Capture added, removed, or modified lines within the file
+        if line.startswith("+") and not line.startswith("+++"):
+            # Line added (ignoring file header lines like +++)
+            current_file["added"].append(line[1:].strip())
+        elif line.startswith("-") and not line.startswith("---"):
+            # Line removed (ignoring file header lines like ---)
+            current_file["removed"].append(line[1:].strip())
 
-            diff_analysis += segment_text
-            print(f"Generated prompt for segment {i + 1}, continuing...")
-        
-        print(f"Generated {len(splitted_diff_prompts)} segments.")
-        self.result = diff_analysis
-        self.state = self.State.FINISHED
+    # Append any remaining changes for the last file in the diff
+    if current_file["file_name"]:
+        file_changes.append(current_file)
 
-    def __eq__(self, diff_analysis):
-        return self.id == diff_analysis.id
+    # Analyze each file change for modifications
+    for file_change in file_changes:
+        added_lines = file_change["added"]
+        removed_lines = file_change["removed"]
+
+        # Simple heuristic to detect modifications by pairing added and removed lines
+        if len(added_lines) > 0 and len(removed_lines) > 0:
+            changes["modified"].append({
+                "file": file_change["file_name"],
+                "added": added_lines,
+                "removed": removed_lines
+            })
+        else:
+            if added_lines:
+                changes["added"].append({
+                    "file": file_change["file_name"],
+                    "lines": added_lines
+                })
+            if removed_lines:
+                changes["removed"].append({
+                    "file": file_change["file_name"],
+                    "lines": removed_lines
+                })
+
+    return changes
