@@ -2,8 +2,8 @@ from prompt import Prompt
 from uuid import uuid4
 import logging
 from enum import Enum
-import requests
 import os
+import requests
 
 class Completion:
     class State(Enum):
@@ -15,8 +15,8 @@ class Completion:
         self._prompt = prompt
         self._state = self.State.UNCOMPLETE
         self._result = ""
-        self._llama_api_key = os.getenv("llama3_api")
-        self._llama_api_url = "https://console.llamaapi.com"  # Example endpoint
+        self.api_key = os.getenv("LLAMA_API_KEY")  # Meta Llama API key from environment variables
+        self.api_url = os.getenv("LLAMA_API_URL")  # Meta Llama API endpoint from environment variables
 
     @property
     def id(self):
@@ -32,26 +32,31 @@ class Completion:
 
     def _complete_prompt(self) -> str:
         headers = {
-            "Authorization": f"Bearer {self._llama_api_key}",
-            "Content-Type": "application/json"
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
         }
-        payload = {
-            "model": "llama-3.2",  # Llama model name
+        data = {
             "prompt": self._prompt.text,
-            "max_tokens": 1024
+            "max_tokens": 1024,     # Adjust based on the desired length of the completion
+            "temperature": 0.7,     # Adjust for response randomness (0 is deterministic, higher is more random)
         }
-        response = requests.post(self._llama_api_url, headers=headers, json=payload)
-        response_data = response.json()
 
-        if response.status_code == 200:
-            return response_data.get("choices", [{}])[0].get("text", "")
-        else:
-            logging.error(f"Failed to complete prompt: {response_data}")
-            return "Error: Unable to retrieve response from Llama API."
+        response = requests.post(self.api_url, headers=headers, json=data)
+        response.raise_for_status()  # Raises an error if the request fails
+
+        # Assuming the response structure matches OpenAI's API format
+        return response.json()["choices"][0]["text"]
 
     def complete(self):
         logging.info(f"completion_{self.id} - Completing prompt...")
-        logging.info(f"completion_{self.id} - prompt to complete: {self._prompt.text}")
+        logging.info(f"completion_{self.id} - prompt to complete: {self._prompt}")
         self._result = self._complete_prompt()
-        self._state = self.State.COMPLETED if self._result else self.State.UNCOMPLETE
-        logging.info(f"completion_{self.id} - completion result: {self._result}")
+        self._state = self.State.COMPLETED
+        logging.info(f"completion_{self.id} - Complete")
+        logging.info(f"completion_{self.id} - Result: {self.result}")
+
+    def __eq__(self, completion: "Completion"):
+        return self._id == completion._id
+
+    def __repr__(self):
+        return f"{self.id} - {self.state} - result: {self.result}"
