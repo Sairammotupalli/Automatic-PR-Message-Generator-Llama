@@ -1,26 +1,31 @@
-from prompt import Prompt
-from diff_analysis import DiffAnalysis
-import logging
-import inspect
-
-class PromptsAreNotEmpty(Exception):
-    pass
+from diff_analysis import analyze_diff
 
 class DiffAnalyzerService:
-    def __init__(self, diff_file: str):
+    """
+    Service class for analyzing a diff file and categorizing changes into added, removed, and modified sections.
+    """
+
+    def __init__(self, diff_file):
+        """
+        Initializes the service with the path to a diff file.
+        
+        Args:
+            diff_file (str): The path to the diff file to analyze.
+        """
         self.diff_file = diff_file
 
     def analyse_diff(self):
-        with open(self.diff_file, "r") as f:
-            diff_text = f.read()
-            diff_analysis = DiffAnalysis(diff_text)
-            diff_analysis.exec()
-            logging.info(f"analysis-{diff_analysis.id} - Analysis finished")
-            logging.info(f"analysis-{diff_analysis.id} - Analysed {diff_text}")
-            logging.info(
-                f"analysis-{diff_analysis.id} - Result:  {diff_analysis.result}"
-            )
-            logging.info(
-                f"analysis-{diff_analysis.id} - Completion used:  {diff_analysis.completion_history}"
-            )
-            return diff_analysis.result
+        """
+        Reads the diff file, analyzes the content, and returns structured change data.
+
+        Returns:
+            dict: A dictionary with categorized changes ('added', 'removed', and 'modified') for each file.
+        """
+        # Read the diff content from the file
+        with open(self.diff_file, 'r') as file:
+            diff_content = file.read()
+
+        # Use analyze_diff function to process the diff content
+        changes = analyze_diff(diff_content)
+        
+        return changes
