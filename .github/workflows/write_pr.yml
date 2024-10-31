@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch full history to access origin/main
 
       - name: Generate PR diff content
         run: |
@@ -28,7 +30,7 @@ jobs:
           echo "Running main.py with diff_content.txt"
           python main.py "diff_content.txt" "${{ github.event.pull_request.number }}"
 
-      # Updated Capture PR Description Output step
+      # Capture PR Description Output using environment file
       - name: Capture PR Description Output
         id: read_pr_description
         run: |
@@ -37,7 +39,7 @@ jobs:
           echo "$pr_body" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      # Updated Update Pull Request Body step
+      # Update Pull Request Body using environment variable
       - name: Update Pull Request Body
         uses: actions/github-script@v6
         with:
