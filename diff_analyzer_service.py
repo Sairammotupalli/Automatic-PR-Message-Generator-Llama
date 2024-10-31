@@ -17,24 +17,28 @@ class DiffAnalyzerService:
         Analyzes the diff content and returns a structured summary.
 
         Returns:
-            dict: A dictionary containing analyzed diff data.
+            list: A list of dictionaries containing analyzed diff data for each file.
         """
-        # Example implementation, structure as needed
-        # Here you could break down added, removed, and modified lines
-        analysis = {
-            "added": [],
-            "removed": [],
-            "modified": []
-        }
+        analysis = []
+        current_file = None
 
-        # Parse diff content to fill in the 'analysis' structure
-        # For demonstration purposes, we'll assume basic parsing
+        # Split the diff content into lines and parse each line
         for line in self.diff_content.splitlines():
-            if line.startswith('+') and not line.startswith('+++'):
-                analysis["added"].append(line[1:].strip())
+            if line.startswith('diff --git'):
+                # New file change block detected
+                if current_file:
+                    analysis.append(current_file)
+                file_path = line.split()[-1]  # Get the file path (e.g., b/test_file.py)
+                current_file = {"file": file_path, "changes": []}
+            elif line.startswith('+') and not line.startswith('+++'):
+                # Line added
+                current_file["changes"].append({"type": "addition", "content": line[1:].strip()})
             elif line.startswith('-') and not line.startswith('---'):
-                analysis["removed"].append(line[1:].strip())
-            elif not line.startswith(('+', '-')):
-                analysis["modified"].append(line.strip())
+                # Line removed
+                current_file["changes"].append({"type": "deletion", "content": line[1:].strip()})
+
+        # Add the last file's changes if any
+        if current_file:
+            analysis.append(current_file)
 
         return analysis
