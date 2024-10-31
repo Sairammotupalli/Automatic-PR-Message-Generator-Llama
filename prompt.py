@@ -1,21 +1,14 @@
-import tiktoken
-from typing import Union
-
-
 class Prompt:
     MAX_TOKENS = 2048
-    MODEL = "text-davinci-003"
 
     def __init__(self, text: str, max_tokens: Union[int, None] = None):
         self.max_tokens = max_tokens if max_tokens is not None else self.MAX_TOKENS
-        self.encoding = tiktoken.encoding_for_model(self.MODEL)
-
         self._text = text
-        self._encoded_prompt = self.encoding.encode(text)
 
     @property
     def length(self):
-        return len(self._encoded_prompt)
+        # Approximate length based on characters rather than tokens
+        return len(self._text)
 
     @property
     def text(self):
@@ -23,7 +16,8 @@ class Prompt:
 
     @property
     def is_valid(self):
-        return len(self._encoded_prompt) <= self.max_tokens
+        # Validate length by character count approximation
+        return self.length <= self.max_tokens
 
     @property
     def remaining_length(self):
@@ -38,10 +32,8 @@ class Prompt:
             return [Prompt(self.text, self.max_tokens)]
 
         prompts = []
-        for i in range(0, len(self._encoded_prompt), self.max_tokens):
-            partial_prompt = Prompt(
-                self.encoding.decode(self._encoded_prompt[i : i + self.max_tokens])
-            )
+        for i in range(0, len(self._text), self.max_tokens):
+            partial_prompt = Prompt(self._text[i : i + self.max_tokens])
             prompts.append(partial_prompt)
         return prompts
 
