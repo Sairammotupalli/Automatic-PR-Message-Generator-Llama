@@ -28,9 +28,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate diff file
         run: |
-          git diff > diff.txt
-      - name: Run main.py
-        run: |
           python main.py --diff_file diff.txt --output_file output.txt --pr_file pr.json
 
       - name: Update Pull Request Body
