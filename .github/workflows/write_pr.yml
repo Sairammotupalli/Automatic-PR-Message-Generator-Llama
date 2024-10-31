@@ -16,7 +16,8 @@ jobs:
       - name: Generate PR diff content
         id: generate_diff
         run: |
-          echo "::set-output name=diff::$(git diff)"
+          git diff > diff.txt
+          echo "::set-output name=diff::$(cat diff.txt)"
 
       # Step 2: Set up Python Environment and Install Dependencies
       - name: Set up Python Environment
@@ -37,7 +38,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python main.py "${{ steps.generate_diff.outputs.diff }}" "${{ github.event.pull_request.number }}"
-        # Capture the output of main.py for use in the next step
         shell: bash
 
       # Step 4: Update the Pull Request Body directly
