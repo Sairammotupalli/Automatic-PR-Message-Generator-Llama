@@ -1,42 +1,31 @@
 import os
+import requests
 import sys
-from diff_analyzer_service import DiffAnalyzerService
-from pr_body_generator import PrBodyGenerator
-from prompt import Prompt
 
-def main(diff_file_path, pr_number):
-    """
-    Main function to generate a pull request description based on diff content file.
-    """
-    # Step 1: Read diff content from file
-    with open(diff_file_path, 'r') as file:
-        diff_content = file.read()
+LLAMA_API_URL = os.getenv("LLAMA_API_URL")
 
-    print("Received diff content:", diff_content)  # Debugging output
-    print("PR Number:", pr_number)  # Debugging output
+def generate_pr_description(diff_content, pr_number):
+    prompt = f"Generate a detailed pull request description based on the following information:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}"
 
-    # Step 2: Analyze the diff content
-    diff_analyzer = DiffAnalyzerService(diff_content=diff_content)
-    diff_analysis = diff_analyzer.analyse_diff()
+    response = requests.post(LLAMA_API_URL, json={
+        "model": "llama3.2",
+        "prompt": prompt
+    })
 
-    # Step 3: Create a prompt and generate the PR body
-    prompt = Prompt(diff_analysis=diff_analysis, pr_summary=f"PR #{pr_number}")
-    pr_body_generator = PrBodyGenerator(prompt=prompt)
-    pr_body_generator.generate_body()
-
-    # Step 4: Return the generated PR description text
-    return pr_body_generator.body
+    if response.status_code == 200:
+        return response.json().get("generated_text", "No content from Llama.")
+    else:
+        print(f"Error: Received status code {response.status_code} from Llama API")
+        return "Error generating PR description."
 
 if __name__ == "__main__":
-    diff_file_path = sys.argv[1]  # Take diff file path as the first argument
-    pr_number = sys.argv[2]       # Take PR number as the second argument
+    diff_file_path = sys.argv[1]
+    pr_number = sys.argv[2]
 
-    # Generate the PR description
-    pr_body = main(diff_file_path, pr_number)
+    with open(diff_file_path, "r") as f:
+        diff_content = f.read()
 
-    # Debugging output: Print the generated PR description to ensure it includes dynamic content
-    print("Generated PR Body:\n", pr_body)
+    pr_body = generate_pr_description(diff_content, pr_number)
 
-    # Save the generated PR description to a file for GitHub Actions to use
     with open("pr_description.txt", "w") as f:
         f.write(pr_body)
