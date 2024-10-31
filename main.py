@@ -8,6 +8,9 @@ def main(diff_content, pr_number):
     """
     Main function to generate a pull request description based on diff content.
     """
+    print("Received diff content:", diff_content)  # Debugging output
+    print("PR Number:", pr_number)  # Debugging output
+
     # Step 1: Analyze the diff content
     diff_analyzer = DiffAnalyzerService(diff_content=diff_content)  # Pass content directly
     diff_analysis = diff_analyzer.analyse_diff()
