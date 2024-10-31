@@ -1,6 +1,5 @@
 import json
 
-
 class PrParser:
     DELIMITER = "### === auto-pr-body ==="
 
