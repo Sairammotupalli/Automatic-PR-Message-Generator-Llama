@@ -31,3 +31,13 @@ if __name__ == "__main__":
     diff_file_path = sys.argv[1]  # Take diff file path as first argument
     pr_number = sys.argv[2]       # Take PR number as second argument
     main(diff_file_path, pr_number)
+
+
+if __name__ == "__main__":
+    diff_file_path = sys.argv[1]  # Take diff file path as the first argument
+    pr_number = sys.argv[2]       # Take PR number as the second argument
+    main(diff_file_path, pr_number)
+
+    # Save the generated PR description to a file
+    with open("pr_description.txt", "w") as f:
+        f.write(pr_body_generator.body)
