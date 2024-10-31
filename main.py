@@ -1,54 +1,43 @@
 import os
 import json
-from typing_extensions import Annotated
-import typer
-import logging
-
 from diff_analyzer_service import DiffAnalyzerService
 from pr_body_generator import PrBodyGenerator
-from pull_request import PullRequest
+from pr_parser import PRParser
+from prompt import Prompt
+from completion import Completion
 
-# Set up logging to capture the process
-logging.basicConfig(filename="pr_generator.log", encoding="utf-8", level=logging.INFO)
-
-def main(
-    diff_file: str = Annotated[str, typer.Option(help="Path to the diff file")],
-    output_file: str = Annotated[str, typer.Option(help="Path to save the generated PR description")],
-    pr_file: str = Annotated[str, typer.Option(help="Path to the PR file containing PR data")],
-):
+def main(diff_file, output_file, pr_file):
     """
     Main function to generate a pull request description based on a code diff.
     """
-    logging.info("Starting PR description generation...")
-
     # Step 1: Analyze the diff file
-    logging.info(f"Analyzing diff file: {diff_file}")
     diff_analyzer = DiffAnalyzerService(diff_file)
     diff_analysis = diff_analyzer.analyse_diff()
-    logging.info(f"Diff analysis complete: {diff_analysis}")
 
-    # Step 2: Generate PR body based on the analysis
-    logging.info("Generating PR body...")
-    pr_body_generator = PrBodyGenerator(diff_analysis)
-    pr_body_generator.generate_body()
-    pr_body = pr_body_generator.body
-    logging.info(f"Generated PR body: {pr_body}")
-
-    # Step 3: Load existing PR data from pr_file and update it with generated body
-    logging.info(f"Loading PR data from: {pr_file}")
-    with open(pr_file, "r") as f:
+    # Step 2: Parse PR data from pr_file
+    with open(pr_file, 'r') as f:
         pr_data = json.load(f)
-        pull_request = PullRequest(pr_data["id"], pr_data["body"])
+    pr_parser = PRParser(pr_data)
+    pr_summary = pr_parser.get_summary()
+
+    # Step 3: Create the prompt with diff_analysis and pr_summary
+    prompt = Prompt(diff_analysis=diff_analysis, pr_summary=pr_summary)
+
+    # Step 4: Generate the PR body using PrBodyGenerator
+    pr_body_generator = PrBodyGenerator(prompt=prompt)
+    pr_body_generator.generate_body()
+
+    # Step 5: Use Completion to complete the PR body
+    completion = Completion(prompt=pr_body_generator)  # Pass pr_body_generator to Completion
+    completion.complete()
     
-    # Update the PR body
-    pull_request.update_auto_body(pr_body)
-
-    # Step 4: Save the generated PR description to the output file
-    logging.info(f"Saving generated PR description to {output_file}")
-    with open(output_file, "w") as f:
-        f.write(pr_body)
-
-    logging.info("PR description generation completed successfully.")
+    # Step 6: Write the generated PR description to output_file
+    with open(output_file, 'w') as f:
+        f.write(completion.result)
 
 if __name__ == "__main__":
-    typer.run(main)
+    main(
+        diff_file=os.getenv("DIFF_FILE", "diff.txt"),
+        output_file=os.getenv("OUTPUT_FILE", "output.txt"),
+        pr_file=os.getenv("PR_FILE", "pr.json")
+    )
