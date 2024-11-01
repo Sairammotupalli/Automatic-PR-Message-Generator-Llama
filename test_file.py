@@ -1,10 +1,19 @@
-# Python Program to calculate the square root
+# Python program to find the factorial of a number provided by the user.
 
-# Note: change this value for a different result
-num = 8 
+# change the value for a different result
+num = 7
 
-# To take the input from the user
-#num = float(input('Enter a number: '))
+# To take input from the user
+#num = int(input("Enter a number: "))
 
-num_sqrt = num ** 0.5
-print('The square root of %0.3f is %0.3f'%(num ,num_sqrt))
+factorial = 1
+
+# check if the number is negative, positive or zero
+if num < 0:
+   print("Sorry, factorial does not exist for negative numbers")
+elif num == 0:
+   print("The factorial of 0 is 1")
+else:
+   for i in range(1,num + 1):
+       factorial = factorial*i
+   print("The factorial of",num,"is",factorial)
