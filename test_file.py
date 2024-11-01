@@ -1,16 +1,10 @@
-# Python program to swap two variables
+# Python Program to calculate the square root
 
-x = 5
-y = 10
+# Note: change this value for a different result
+num = 8 
 
-# To take inputs from the user
-#x = input('Enter value of x: ')
-#y = input('Enter value of y: ')
+# To take the input from the user
+#num = float(input('Enter a number: '))
 
-# create a temporary variable and swap the values
-temp = x
-x = y
-y = temp
-
-print('The value of x after swapping: {}'.format(x))
-print('The value of y after swapping: {}'.format(y))
+num_sqrt = num ** 0.5
+print('The square root of %0.3f is %0.3f'%(num ,num_sqrt))
