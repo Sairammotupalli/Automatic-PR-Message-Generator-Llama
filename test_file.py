@@ -1,9 +1,8 @@
-# Taking kilometers input from the user
-kilometers = float(input("Enter value in kilometers: "))
+# Python Program to convert temperature in celsius to fahrenheit
 
-# conversion factor
-conv_fac = 0.621371
+# change this value for a different result
+celsius = 37.5
 
-# calculate miles
-miles = kilometers * conv_fac
-print('%0.2f kilometers is equal to %0.2f miles' %(kilometers,miles))
+# calculate fahrenheit
+fahrenheit = (celsius * 1.8) + 32
+print('%0.1f degree Celsius is equal to %0.1f degree Fahrenheit' %(celsius,fahrenheit))
