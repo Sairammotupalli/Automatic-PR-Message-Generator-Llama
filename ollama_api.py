@@ -4,13 +4,13 @@ import requests
 app = FastAPI()
 
 @app.post("/generate")
-async def generate_text(prompt: str, model: str = "llama3"):
+async def generate_text(prompt: str, model: str = "llama3.2"):
     """
     Endpoint to generate text using Ollama's Llama model API.
 
     Args:
         prompt (str): The prompt text for the Llama model.
-        model (str): The Llama model to use (default is "llama3").
+        model (str): The Llama model to use (default is "llama3.3").
 
     Returns:
         dict: JSON response with the generated text.
