@@ -11,11 +11,11 @@ And also, along with the above details,
 2. Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below. Ensure that scores are not biased towards high values. Consider all relevant information from the Pull Request and provide scores based on these factors. Output in the exact specified format:
 
 ### **Category 1: Impact Analysis**  
-Evaluate the impact of the Pull Request on the overall codebase and provide a detailed breakdown of the following factors:  
-- **Bug Fix**: [Explanation of how well it resolves existing issues or bugs]  
-- **Usefulness**: [Explanation of how the changes add value to the project]  
-- **New Functionality**: [Explanation of how the new features enhance the system]  
-- **Maintainability**: [Explanation of how the changes affect the code’s maintainability and long-term stability]  
+Evaluate the impact of the Pull Request on the overall codebase and just provide a overall score using the following factors:  
+- **Bug Fix**: [how well it resolves existing issues or bugs]  
+- **Usefulness**: [how the changes add value to the project]  
+- **New Functionality**: [how the new features enhance the system]  
+- **Maintainability**: [how the changes affect the code’s maintainability and long-term stability]  
 **Impact Score**: [Final score between 0-100 based on the above four factors]
 
 ---
