@@ -1,9 +1,14 @@
-# Taking kilometers input from the user
-kilometers = float(input("Enter value in kilometers: "))
+# Sum of natural numbers up to num
 
-# conversion factor
-conv_fac = 0.621371
+num = 16
 
-# calculate miles
-miles = kilometers * conv_fac
-print('%0.2f kilometers is equal to %0.2f miles' %(kilometers,miles))
+if num < 0:
+   print("Enter a positive number")
+else:
+   sum = 0
+   # use while loop to iterate until zero
+   while(num > 0):
+       sum += num
+       num -= 1
+   print("The sum is", sum)
+
