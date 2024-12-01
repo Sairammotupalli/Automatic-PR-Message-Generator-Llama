@@ -14,7 +14,7 @@ class Prompt:
         prompt_text = "Generate a detailed pull request description based on the following information:\n\n"
         prompt_text += f"### PR Summary:\n{self.pr_summary}\n\n"
         prompt_text += "### Code Changes:\n"
-        prompt_text += """ **Prompt**:  
+        prompt_text += """  
 Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below. Ensure that scores are not biased towards high values. Consider all relevant information from the Pull Request and provide scores based on these factors. Output in the exact specified format:
 
 ### **Category 1: Impact Analysis**  
