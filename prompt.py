@@ -16,7 +16,7 @@ class Prompt:
         prompt_text += "### Code Changes:\n"
         prompt_text += """  
 And also, along with the above details, 
-2. Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below. Ensure that scores are not biased towards high values. Consider all relevant information from the Pull Request and provide scores based on these factors. Output in the exact specified format:
+2. Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below. Consider all relevant information from the Pull Request and provide scores based on these factors. Output in the exact specified format:
 
 ### **Category 1: Impact Analysis**  
 Evaluate the impact of the Pull Request on the overall codebase and just provide a overall score using the following factors:  
