@@ -5,10 +5,10 @@ import sys
 LLAMA_API_URL = os.getenv("LLAMA_API_URL")
 
 def generate_pr_description(diff_content, pr_number):
-    prompt = f" 1. Generate a detailed pull request description based on the following information:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}"
+    prompt = f" 1. Generate a detailed pull request description based on the following information:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}. Just summarize the changes using Description and changes."
     prompt += """  
 And also, along with the above details, 
-2. Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below. Ensure that scores are not biased towards high values. Consider all relevant information from the Pull Request and provide scores based on these factors. Output in the exact specified format:
+2. Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below. Consider all relevant information from the Pull Request and provide scores based on these factors. Output in the exact specified format:
 
 ### **Category 1: Impact Analysis**  
 Evaluate the impact of the Pull Request on the overall codebase and just provide a overall score using the following factors:  
