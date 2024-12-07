@@ -31,28 +31,41 @@ from collections import Counter
 nltk.download('punkt')
 nltk.download('stopwords')
 
-def summarize_text(text, num_sentences=3):
-    sentences = sent_tokenize(text)
-    words = word_tokenize(text.lower())
-    stop_words = set(stopwords.words('english'))
+def summarize_text(text, num_sentences=3, language='english', custom_stopwords=None):
+    try:
+        if not text.strip():
+            return "Input text is empty."
+        nltk.download('stopwords')
+        nltk.download('punkt')
+        stop_words = set(stopwords.words(language))
+        if custom_stopwords:
+            stop_words.update(custom_stopwords)
 
-    # Count word frequencies excluding stop words
-    word_frequencies = Counter(word for word in words if word not in stop_words and word.isalnum())
+        sentences = sent_tokenize(text)
+        words = word_tokenize(text.lower())
+        words = [word for word in words if word.isalnum() and word not in stop_words]
 
-    # Rank sentences based on word frequencies
-    sentence_scores = {}
-    for sentence in sentences:
-        for word in word_tokenize(sentence.lower()):
-            if word in word_frequencies:
-                sentence_scores[sentence] = sentence_scores.get(sentence, 0) + word_frequencies[word]
+        # POS tagging to weigh important words
+        tagged_words = pos_tag(words)
+        important_words = [word for word, tag in tagged_words if tag.startswith(('NN', 'VB'))]
 
-    # Sort and select top sentences
-    summarized_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
-    
-    # Ensure the result is not empty
-    if summarized_sentences:
-        return ' '.join(summarized_sentences)
-    return "No meaningful summary could be generated."
+        word_frequencies = Counter(important_words)
+
+        # Rank sentences based on word frequencies
+        sentence_scores = {}
+        for sentence in sentences:
+            for word in word_tokenize(sentence.lower()):
+                if word in word_frequencies:
+                    sentence_scores[sentence] = sentence_scores.get(sentence, 0) + word_frequencies[word]
+
+        summarized_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
+        
+        # Ensure the result is not empty
+        if summarized_sentences:
+            return ' '.join(summarized_sentences)
+        return "No meaningful summary could be generated."
+    except Exception as e:
+        return f"Error: {e}"
 
 # Example usage
 text = """
