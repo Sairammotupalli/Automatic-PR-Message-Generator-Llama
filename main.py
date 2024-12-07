@@ -6,17 +6,8 @@ LLAMA_API_URL = os.getenv("LLAMA_API_URL")
 
 def generate_pr_description(diff_content, pr_number):
     
-    prompt = """  **Generate a detailed pull request description** based on the following information:
-   - **PR Summary**:  
-     PR #{pr_number}  
-   - **Code Changes**:  
-     {diff_content}  
-
-   Summarize the changes succinctly in the "Description" section.
-
----
-
-And then after, 
+    prompt = f" Generate a detailed pull request description based on the following information:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}. Just summarize the changes using Description."
+    prompt +=  """Next, 
 **Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below**. Use the provided rubric for guidance. Ensure that scores reflect the quality and specifics of the Pull Request, and do not bias scores toward high values without sufficient justification. Follow the exact format given below:
 
 #### **Scoring Rubric**:
