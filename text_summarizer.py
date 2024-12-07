@@ -32,6 +32,8 @@ nltk.download('punkt')
 nltk.download('stopwords')
 
 def summarize_text(text, num_sentences=3):
+    if not text.strip():
+        return "Input text is empty."
     sentences = sent_tokenize(text)
     words = word_tokenize(text.lower())
     stop_words = set(stopwords.words('english'))
@@ -53,12 +55,3 @@ def summarize_text(text, num_sentences=3):
     if summarized_sentences:
         return ' '.join(summarized_sentences)
     return "No meaningful summary could be generated."
-
-# Example usage
-text = """
-Natural language processing (NLP) is a sub-field of artificial intelligence that focuses on the interaction between computers and humans through natural language. 
-The ultimate objective of NLP is to read, decipher, understand, and make sense of human languages in a valuable way. 
-Applications of NLP are vast and include chatbots, sentiment analysis, machine translation, and more.
-"""
-print(summarize_text(text))
-
