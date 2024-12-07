@@ -103,6 +103,53 @@ def generate_pr_description(diff_content, pr_number):
 Here are additional examples to guide the LLM further:
 
 ---
+
+**Example 3:**  
+- **PR Summary**:  
+  PR #125: Add a new feature to support dark mode in the user interface.  
+- **Code Changes**:  
+  Introduced a toggle switch for dark mode in the UI settings. Updated CSS styles for dark mode compatibility across all pages. Added tests for dark mode activation and ensured accessibility compliance.  
+
+  **Description**:  
+  Added a dark mode feature, allowing users to switch between light and dark themes. Updated stylesheets to ensure consistent visual presentation in both modes. Included accessibility enhancements like color contrast adjustments and screen reader support.  
+
+  **Impact Score**: 95  
+  - **Reasoning**: Highly useful and improves user experience significantly. Well-implemented with accessibility considerations.  
+
+  **Code Quality Score**: 90  
+  - **Reasoning**: Clear and modular code, though minor documentation improvements are needed.  
+
+  **Security Score**: 100  
+  - **Reasoning**: No security risks introduced.  
+
+  **Creativity Score**: 85  
+  - **Reasoning**: A creative solution to enhance user experience with proper accessibility support.  
+
+---
+
+Here’s another concise example:
+
+---
+
+**Example 4:**  
+- **PR Summary**: PR #127: Optimize database queries for user activity reports.  
+- **Code Changes**: Refactored SQL queries to reduce redundant joins, added proper indexing to relevant tables, and optimized pagination for large datasets.  
+
+  **Description**: Improved query efficiency for generating user activity reports. Reduced load times by 60% through indexing and optimized joins. Enhanced pagination for better performance on large datasets.  
+
+  **Impact Score**: 90  
+  - **Reasoning**: Significant improvement in performance with a noticeable impact on large datasets.  
+
+  **Code Quality Score**: 88  
+  - **Reasoning**: Clean and efficient SQL, though code comments could be more detailed for future maintainability.  
+
+  **Security Score**: 95  
+  - **Reasoning**: Eliminated potential SQL injection risks and validated query inputs.  
+
+  **Creativity Score**: 80  
+  - **Reasoning**: Effective optimization using established database techniques.  
+
+---"""
 """
 
     response = requests.post(LLAMA_API_URL, json={
