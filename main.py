@@ -6,8 +6,7 @@ LLAMA_API_URL = os.getenv("LLAMA_API_URL")
 
 def generate_pr_description(diff_content, pr_number):
     
-    prompt = """  
-1. **Generate a detailed pull request description** based on the following information:
+    prompt = """  **Generate a detailed pull request description** based on the following information:
    - **PR Summary**:  
      PR #{pr_number}  
    - **Code Changes**:  
@@ -17,7 +16,8 @@ def generate_pr_description(diff_content, pr_number):
 
 ---
 
-2. **Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below**. Use the provided rubric for guidance. Ensure that scores reflect the quality and specifics of the Pull Request, and do not bias scores toward high values without sufficient justification. Follow the exact format given below:
+And then after, 
+**Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below**. Use the provided rubric for guidance. Ensure that scores reflect the quality and specifics of the Pull Request, and do not bias scores toward high values without sufficient justification. Follow the exact format given below:
 
 #### **Scoring Rubric**:
 - **100**: Excellent, exceeds all expectations, no areas for improvement.  
@@ -34,7 +34,7 @@ def generate_pr_description(diff_content, pr_number):
   - **New Functionality**: How the new features enhance the system.  
   - **Maintainability**: The impact on the code’s maintainability and long-term stability.  
 
-  **Impact Score**: [0–100]  
+  **Impact Score**: Overall score based on Bug Fix, Usefulness, New Functionality and Maintainability[0–100]  
 
 ---
 
@@ -59,7 +59,7 @@ def generate_pr_description(diff_content, pr_number):
 
 ---
 
-### **Few-Shot Examples**:
+### **Few-Shot Examples for your understanding of the rubrics (This is not a PR change)**:
 
 **Example 1:**  
 - **PR Summary**:  
@@ -112,53 +112,7 @@ def generate_pr_description(diff_content, pr_number):
 Here are additional examples to guide the LLM further:
 
 ---
-
-**Example 3:**  
-- **PR Summary**:  
-  PR #125: Add a new feature to support dark mode in the user interface.  
-- **Code Changes**:  
-  Introduced a toggle switch for dark mode in the UI settings. Updated CSS styles for dark mode compatibility across all pages. Added tests for dark mode activation and ensured accessibility compliance.  
-
-  **Description**:  
-  Added a dark mode feature, allowing users to switch between light and dark themes. Updated stylesheets to ensure consistent visual presentation in both modes. Included accessibility enhancements like color contrast adjustments and screen reader support.  
-
-  **Impact Score**: 95  
-  - **Reasoning**: Highly useful and improves user experience significantly. Well-implemented with accessibility considerations.  
-
-  **Code Quality Score**: 90  
-  - **Reasoning**: Clear and modular code, though minor documentation improvements are needed.  
-
-  **Security Score**: 100  
-  - **Reasoning**: No security risks introduced.  
-
-  **Creativity Score**: 85  
-  - **Reasoning**: A creative solution to enhance user experience with proper accessibility support.  
-
----
-
-Here’s another concise example:
-
----
-
-**Example 4:**  
-- **PR Summary**: PR #127: Optimize database queries for user activity reports.  
-- **Code Changes**: Refactored SQL queries to reduce redundant joins, added proper indexing to relevant tables, and optimized pagination for large datasets.  
-
-  **Description**: Improved query efficiency for generating user activity reports. Reduced load times by 60% through indexing and optimized joins. Enhanced pagination for better performance on large datasets.  
-
-  **Impact Score**: 90  
-  - **Reasoning**: Significant improvement in performance with a noticeable impact on large datasets.  
-
-  **Code Quality Score**: 88  
-  - **Reasoning**: Clean and efficient SQL, though code comments could be more detailed for future maintainability.  
-
-  **Security Score**: 95  
-  - **Reasoning**: Eliminated potential SQL injection risks and validated query inputs.  
-
-  **Creativity Score**: 80  
-  - **Reasoning**: Effective optimization using established database techniques.  
-
----"""
+"""
 
     response = requests.post(LLAMA_API_URL, json={
         "model": "llama3.2",
