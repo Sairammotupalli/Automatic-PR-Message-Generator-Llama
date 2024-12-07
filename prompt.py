@@ -14,17 +14,7 @@ class Prompt:
         prompt_text = f"### PR Summary:\n{self.pr_summary}\n\n"
         prompt_text += "### Code Changes:\n"
         prompt_text += """  
-1. **Generate a detailed pull request description** based on the following information:
-   - **PR Summary**:  
-     PR #{pr_number}  
-   - **Code Changes**:  
-     {diff_content}  
-
-   Summarize the changes succinctly in the "Description" section.
-
----
-
-2. **Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below**. Use the provided rubric for guidance. Ensure that scores reflect the quality and specifics of the Pull Request, and do not bias scores toward high values without sufficient justification. Follow the exact format given below:
+**Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below**. Use the provided rubric for guidance. Ensure that scores reflect the quality and specifics of the Pull Request, and do not bias scores toward high values without sufficient justification. Follow the exact format given below:
 
 #### **Scoring Rubric**:
 - **100**: Excellent, exceeds all expectations, no areas for improvement.  
@@ -41,7 +31,7 @@ class Prompt:
   - **New Functionality**: How the new features enhance the system.  
   - **Maintainability**: The impact on the code’s maintainability and long-term stability.  
 
-  **Impact Score**: [0–100]  
+  **Impact Score**: Overall score based on Bug Fix, Usefulness, New Functionality and Maintainability[0–100]  
 
 ---
 
@@ -66,7 +56,7 @@ class Prompt:
 
 ---
 
-### **Few-Shot Examples**:
+### **Few-Shot Examples for your understanding of the rubrics (This is not a PR change)**:
 
 **Example 1:**  
 - **PR Summary**:  
