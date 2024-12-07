@@ -2,7 +2,7 @@
 kilometers = float(input("Enter value in kilometers: "))
 
 # conversion factor
-conv_fac = 0.621371
+conv_fac = 0.9656
 
 # calculate miles
 miles = kilometers * conv_fac
