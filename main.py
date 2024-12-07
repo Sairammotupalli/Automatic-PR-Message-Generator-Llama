@@ -149,7 +149,7 @@ Here’s another concise example:
   **Creativity Score**: 80  
   - **Reasoning**: Effective optimization using established database techniques.  
 
----"""
+---
 """
 
     response = requests.post(LLAMA_API_URL, json={
