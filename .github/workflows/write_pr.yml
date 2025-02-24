@@ -32,10 +32,11 @@ jobs:
 
       - name: Generate PR Description
         env:
-          LLAMA_API_URL: https://5927-2601-647-4601-260-1419-93c-8237-b39f.ngrok-free.app/generate  # Replace with your actual ngrok URL
+          LLAMA_API_URL: https://your-ngrok-url.ngrok-free.app/generate  #way to set env variable
         run: |
           echo "Running main.py with diff_content.txt"
           python main.py "diff_content.txt" "${{ github.event.pull_request.number }}"
+
 
       - name: Capture PR Description Output
         id: read_pr_description
