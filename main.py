@@ -153,7 +153,7 @@ Here’s another concise example:
 """
 
     response = requests.post(LLAMA_API_URL, json={
-        "model": "llama3",
+        "model": "llama3.2",
         "prompt": prompt
     })
 
