@@ -166,8 +166,6 @@ Here’s another concise example:
         print(f"Error: Received status code {response.status_code} from Llama API")
         return "Error generating PR description."
 
-print("Debug: Final PR description written:", result)
-
 if __name__ == "__main__":
     diff_file_path = sys.argv[1]
     pr_number = sys.argv[2]
