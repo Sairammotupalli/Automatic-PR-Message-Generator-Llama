@@ -32,7 +32,7 @@ jobs:
 
       - name: Generate PR Description
         env:
-          LLAMA_API_URL: https://65b3-129-210-115-225.ngrok-free.app/generate
+          LLAMA_API_URL: https://f9d4-129-210-115-225.ngrok-free.app/generate
         run: |
           echo "Running main.py with diff_content.txt"
           python main.py "diff_content.txt" "${{ github.event.pull_request.number }}"
