@@ -161,13 +161,10 @@ Here’s another concise example:
     print("Debug: Full response from FastAPI:", response.json())
 
     if response.status_code == 200:
-    result = response.json().get("response", "No content from Llama.")
-    with open("pr_description.txt", "w", encoding="utf-8") as f:
-        f.write(result)  
-else:
-    result = "Error generating PR description."
-    with open("pr_description.txt", "w", encoding="utf-8") as f:
-        f.write(result)
+        return response.json().get("generated_text", "No content from Llama.")
+    else:
+        print(f"Error: Received status code {response.status_code} from Llama API")
+        return "Error generating PR description."
 
 print("Debug: Final PR description written:", result)
 
