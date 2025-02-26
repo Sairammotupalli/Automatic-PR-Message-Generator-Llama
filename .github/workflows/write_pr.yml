@@ -4,6 +4,8 @@ on:
   pull_request:
     types: [opened, edited, synchronize]
 
+change the ollama_api.py according to that
+
 jobs:
   generate-pr-description:
     runs-on: ubuntu-latest
@@ -41,24 +43,16 @@ jobs:
       - name: Capture PR Description Output
         id: read_pr_description
         run: |
-          echo "🔹 Debug: Capturing PR description"
-          cat pr_description.txt  # Print output for debugging
           pr_body=$(cat pr_description.txt)
           echo "PR_BODY<<EOF" >> $GITHUB_ENV
           echo "$pr_body" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          
-      - name: Debug PR Body
-        run: |
-         echo "🔹 Debug: PR Body content captured:"
-         echo "$PR_BODY"
-         
+
       - name: Update Pull Request Body
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log("🔹 Debug: PR Body before update:", process.env.PR_BODY);
             github.rest.pulls.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
