@@ -4,8 +4,6 @@ on:
   pull_request:
     types: [opened, edited, synchronize]
 
-change the ollama_api.py according to that
-
 jobs:
   generate-pr-description:
     runs-on: ubuntu-latest
@@ -34,11 +32,10 @@ jobs:
 
       - name: Generate PR Description
         env:
-          LLAMA_API_URL: https://6397-129-210-115-225.ngrok-free.app/generate
+          LLAMA_API_URL: https://3316-2601-647-4601-2b0-79f1-af37-5fc9-2b60.ngrok-free.app/generate  # Replace with your actual ngrok URL
         run: |
           echo "Running main.py with diff_content.txt"
           python main.py "diff_content.txt" "${{ github.event.pull_request.number }}"
-
 
       - name: Capture PR Description Output
         id: read_pr_description
