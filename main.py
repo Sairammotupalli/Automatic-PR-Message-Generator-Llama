@@ -1,14 +1,17 @@
-
 import os
 import requests
 import sys
+import json
 
 LLAMA_API_URL = os.getenv("LLAMA_API_URL")
 
 def generate_pr_description(diff_content, pr_number):
-    
+    if not LLAMA_API_URL:
+        print("❌ Error: LLAMA_API_URL is not set.")
+        return "Error: LLAMA_API_URL is not configured."
+
     prompt = f" Generate a detailed pull request description based on the following information:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}. Just summarize the changes using Description."
-    prompt +=  """Next, 
+    prompt += """Next, 
 **Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below**. Use the provided rubric for guidance. Ensure that scores reflect the quality and specifics of the Pull Request, and do not bias scores toward high values without sufficient justification. Follow the exact format given below:
 
 #### **Scoring Rubric**:
@@ -26,7 +29,7 @@ def generate_pr_description(diff_content, pr_number):
   - **New Functionality**: How the new features enhance the system.  
   - **Maintainability**: The impact on the code’s maintainability and long-term stability.  
 
-  **Impact Score**: Overall score based on Bug Fix, Usefulness, New Functionality and Maintainability[0–100]  
+  **Impact Score**: Overall score based on Bug Fix, Usefulness, New Functionality, and Maintainability [0–100]  
 
 ---
 
@@ -50,131 +53,61 @@ def generate_pr_description(diff_content, pr_number):
   **Creativity Score**: [0–100]  
 
 ---
-
-### **Few-Shot Examples for your understanding of the rubrics (This is not a PR change)**:
-
-**Example 1:**  
-- **PR Summary**:  
-  PR #123: Refactor the user authentication system.  
-- **Code Changes**:  
-  Added JWT-based token authentication, removed legacy session-based authentication, and updated relevant endpoints.  
-
-  **Description**:  
-  Refactored the authentication system to enhance security by introducing JWT tokens. Deprecated session-based authentication and replaced it with token-based mechanisms, improving scalability. Updated endpoints and associated documentation.  
-
-  **Impact Score**: 90  
-  - **Reasoning**: Significantly enhances security and scalability. However, backward compatibility with existing systems might require additional consideration.  
-
-  **Code Quality Score**: 85  
-  - **Reasoning**: Well-structured and readable code but could benefit from more extensive documentation.  
-
-  **Security Score**: 95  
-  - **Reasoning**: Eliminates session vulnerabilities and implements JWT securely.  
-
-  **Creativity Score**: 80  
-  - **Reasoning**: Implements known best practices effectively but does not introduce novel approaches.  
-
----
-
-**Example 2:**  
-- **PR Summary**:  
-  PR #124: Add caching for frequently accessed endpoints.  
-- **Code Changes**:  
-  Implemented Redis caching for GET /products and GET /categories, reducing response times by 70%.  
-
-  **Description**:  
-  Added Redis-based caching to optimize the performance of frequently accessed endpoints. Updated configuration files and ensured cache invalidation works seamlessly.  
-
-  **Impact Score**: 85  
-  - **Reasoning**: Greatly improves performance but limited to a specific use case.  
-
-  **Code Quality Score**: 88  
-  - **Reasoning**: Follows best practices, though inline comments could be clearer.  
-
-  **Security Score**: 80  
-  - **Reasoning**: No security vulnerabilities, but configuration files could be better secured.  
-
-  **Creativity Score**: 75  
-  - **Reasoning**: Effectively applies an established approach without significant innovation.  
-
----
-
-**Now, evaluate the given Pull Request using the above format and rubric.**
-
-Here are additional examples to guide the LLM further:
-
----
-
-**Example 3:**  
-- **PR Summary**:  
-  PR #125: Add a new feature to support dark mode in the user interface.  
-- **Code Changes**:  
-  Introduced a toggle switch for dark mode in the UI settings. Updated CSS styles for dark mode compatibility across all pages. Added tests for dark mode activation and ensured accessibility compliance.  
-
-  **Description**:  
-  Added a dark mode feature, allowing users to switch between light and dark themes. Updated stylesheets to ensure consistent visual presentation in both modes. Included accessibility enhancements like color contrast adjustments and screen reader support.  
-
-  **Impact Score**: 95  
-  - **Reasoning**: Highly useful and improves user experience significantly. Well-implemented with accessibility considerations.  
-
-  **Code Quality Score**: 90  
-  - **Reasoning**: Clear and modular code, though minor documentation improvements are needed.  
-
-  **Security Score**: 100  
-  - **Reasoning**: No security risks introduced.  
-
-  **Creativity Score**: 85  
-  - **Reasoning**: A creative solution to enhance user experience with proper accessibility support.  
-
----
-
-Here’s another concise example:
-
----
-
-**Example 4:**  
-- **PR Summary**: PR #127: Optimize database queries for user activity reports.  
-- **Code Changes**: Refactored SQL queries to reduce redundant joins, added proper indexing to relevant tables, and optimized pagination for large datasets.  
-
-  **Description**: Improved query efficiency for generating user activity reports. Reduced load times by 60% through indexing and optimized joins. Enhanced pagination for better performance on large datasets.  
-
-  **Impact Score**: 90  
-  - **Reasoning**: Significant improvement in performance with a noticeable impact on large datasets.  
-
-  **Code Quality Score**: 88  
-  - **Reasoning**: Clean and efficient SQL, though code comments could be more detailed for future maintainability.  
-
-  **Security Score**: 95  
-  - **Reasoning**: Eliminated potential SQL injection risks and validated query inputs.  
-
-  **Creativity Score**: 80  
-  - **Reasoning**: Effective optimization using established database techniques.  
-
----
 """
 
-    response = requests.post(LLAMA_API_URL, json={
-        "model": "llama3.2",
-        "prompt": prompt
-    })
+    try:
+        print(f"🔹 Sending request to LLAMA_API_URL: {LLAMA_API_URL}")
+        
+        response = requests.post(LLAMA_API_URL, json={"model": "llama3.2", "prompt": prompt})
+        
+        if response.status_code != 200:
+            print(f" Error: Received status code {response.status_code} from Llama API")
+            return "Error generating PR description."
 
-    # Log the entire response for debugging
-    print("Debug: Full response from FastAPI:", response.json())
+        response_json = response.json()
+        print(" Debug: Full response from FastAPI:", json.dumps(response_json, indent=2))
 
-    if response.status_code == 200:
-        return response.json().get("generated_text", "No content from Llama.")
-    else:
-        print(f"Error: Received status code {response.status_code} from Llama API")
-        return "Error generating PR description."
+        # Extract response text safely
+        generated_text = response_json.get("response", "No content from Llama.")
+        
+        if not generated_text.strip():
+            print("Warning: Llama API returned an empty response.")
+            return "No content from Llama."
+
+        return generated_text
+
+    except requests.exceptions.RequestException as e:
+        print(f" Error: Failed to reach Llama API - {e}")
+        return "Error: Unable to contact Llama API."
 
 if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print(" Error: Missing required arguments. Usage: python main.py <diff_file_path> <pr_number>")
+        sys.exit(1)
+
     diff_file_path = sys.argv[1]
     pr_number = sys.argv[2]
 
-    with open(diff_file_path, "r") as f:
-        diff_content = f.read()
+    try:
+        with open(diff_file_path, "r") as f:
+            diff_content = f.read().strip()
+        
+        if not diff_content:
+            print(" Warning: The diff file is empty. No content to process.")
+            pr_body = "No changes detected in this PR."
+        else:
+            pr_body = generate_pr_description(diff_content, pr_number)
 
-    pr_body = generate_pr_description(diff_content, pr_number)
+        # Write the generated PR description to a file
+        with open("pr_description.txt", "w") as f:
+            f.write(pr_body)
 
-    with open("pr_description.txt", "w") as f:
-        f.write(pr_body)
+        print("PR description saved successfully.")
+
+    except FileNotFoundError:
+        print(f" Error: Diff file '{diff_file_path}' not found.")
+        sys.exit(1)
+
+    except Exception as e:
+        print(f" Unexpected Error: {e}")
+        sys.exit(1)
