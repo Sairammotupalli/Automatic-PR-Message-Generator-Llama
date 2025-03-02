@@ -11,7 +11,7 @@ class Prompt:
         """
         Create the prompt text based on the diff analysis.
         """
-         prompt += 
+         prompt = 
 """
 Analyze the given code changes and generate a detailed pull request description as a summary.
 
