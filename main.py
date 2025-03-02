@@ -59,7 +59,7 @@ def generate_pr_description(diff_content, pr_number):
     try:
         print(f"🔹 Sending request to LLAMA_API_URL: {LLAMA_API_URL}")
         
-        response = requests.post(LLAMA_API_URL, json={"model": "llama3.2", "prompt": prompt})
+        response = requests.post(LLAMA_API_URL, json={"model": "llama3.3", "prompt": prompt})
         
         if response.status_code != 200:
             print(f" Error: Received status code {response.status_code} from Llama API")
