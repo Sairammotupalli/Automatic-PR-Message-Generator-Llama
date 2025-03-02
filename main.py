@@ -5,11 +5,6 @@ import json
 
 LLAMA_API_URL = os.getenv("LLAMA_API_URL")
 
-def generate_pr_description(diff_content, pr_number):
-    if not LLAMA_API_URL:
-        print("❌ Error: LLAMA_API_URL is not set.")
-        return "Error: LLAMA_API_URL is not configured."
-
     prompt = """
 Analyze the given code changes and generate a detailed pull request description as a summary.
 
