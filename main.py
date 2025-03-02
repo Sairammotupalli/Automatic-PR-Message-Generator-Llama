@@ -30,7 +30,7 @@ Be careful while analyzing the code. Make sure to identify all the code changes 
 
 —
 """
-prompt+=f"These are the code changes: \n\nPR Summary: \nPR #{pr_number}\n\nCode Changes:\n{diff_content}."
+    prompt+=f"These are the code changes: \n\nPR Summary: \nPR #{pr_number}\n\nCode Changes:\n{diff_content}."
 
     prompt+="""
 Checkboxes: 
