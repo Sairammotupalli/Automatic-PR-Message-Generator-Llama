@@ -11,7 +11,7 @@ def generate_pr_description(diff_content, pr_number):
         return "Error: LLAMA_API_URL is not configured."
 
 
-  prompt += 
+  prompt = 
 """
 Analyze the given code changes and generate a detailed pull request description as a summary.
 
