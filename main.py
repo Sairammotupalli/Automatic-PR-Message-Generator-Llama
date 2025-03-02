@@ -16,7 +16,7 @@ def generate_pr_description(diff_content, pr_number):
 
 Analyze the given code changes and generate a detailed pull request description as a summary.
 
-And give a overall single score based on Readability, Maintainability and Clarity after the code changes. 
+And give an overall single score based on Readability, Maintainability and Clarity. 
 
 
 
@@ -26,7 +26,7 @@ The return format should be in the below json format:
     "output": "<text explanation of the reason for the scoring and improvements that can apply>”
 } 
 
-Be careful while analyzing the code. Make sure to identify all the code changes and double-check the answer. Use the checkboxes and scoring criteria below while assigning the score.
+Be careful while analyzing the new code. Make sure to identify all the code changes before and after modifications and double-check the answer. Use the checkboxes and scoring criteria below while assigning the score.
 
 —
 """
