@@ -11,9 +11,9 @@ def generate_pr_description(diff_content, pr_number):
         print("❌ Error: LLAMA_API_URL is not set.")
         return "Error: LLAMA_API_URL is not configured."
 
-    prompt = f" Generate a detailed pull request description based on the following information:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}. Just summarize the changes using Description."
-    prompt += """
-    Readability prompt:  “””
+    
+    prompt = """
+
 Analyze the given code changes and generate a detailed pull request description as a summary.
 
 And give a overall score based on Readability, Maintainability and Clarity. 
@@ -30,9 +30,9 @@ Be careful while analyzing the code. Make sure to identify all the code changes 
 
 —
 """
-prompt+=f"These are the code changes: \nPR Summary: \nPR #{pr_number}\n\nCode Changes:\n{diff_content}."
+prompt+=f"These are the code changes: \n\nPR Summary: \nPR #{pr_number}\n\nCode Changes:\n{diff_content}."
 
-    prompt="""
+    prompt+="""
 Checkboxes: 
 1. Clear Naming Conventions (Function and variable names are meaningful, self-explanatory and easy to understand.)
 2. Documentation (Code includes meaningful inline comments explaining logic and purpose.)
