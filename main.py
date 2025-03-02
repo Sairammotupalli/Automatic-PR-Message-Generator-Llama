@@ -16,7 +16,7 @@ def generate_pr_description(diff_content, pr_number):
 
 Analyze the given code changes and generate a detailed pull request description as a summary.
 
-And give a overall score based on Readability, Maintainability and Clarity. 
+And give a overall single score based on Readability, Maintainability and Clarity after the code changes. 
 
 
 
@@ -26,7 +26,7 @@ The return format should be in the below json format:
     "output": "<text explanation of the reason for the scoring and improvements that can apply>”
 } 
 
-Be careful while analyzing the code. Make sure to identify all the code changes and double-check the answer. Use the rubric and scoring criteria below while assigning the score.
+Be careful while analyzing the code. Make sure to identify all the code changes and double-check the answer. Use the checkboxes and scoring criteria below while assigning the score.
 
 —
 """
@@ -39,10 +39,11 @@ Checkboxes: 
 3. Formatting & Styling (Code follows consistent indentation and spacing.)
 4. Maintainability (Code is easy to extend or modify.)
 5. Code Length (Functions are not excessively long; logic is broken down into smaller parts.)
+
 Scoring Criteria:
-- 3 (Excellent): Code meets all readability, maintainability, and clarity standards. Naming is clear, proper documentation, formatting is consistent, and code structure is easy to modify.  
-- 2 (moderate): Code is readable and maintainable but has a scope for improvement.  
-- 1 (Poor): Code is highly unreadable, with little no documentation, inconsistent naming.
+- 3 (Excellent): After modifications, Code meets all readability, maintainability, and clarity standards. Naming is clear, proper documentation, formatting is consistent, and code structure is easy to modify.  
+- 2 (moderate): After modifications, Code is readable and maintainable but has a scope for improvement.  
+- 1 (Poor): After modifications, Code is highly unreadable, with little no documentation, inconsistent naming.
 ---
 """
 
