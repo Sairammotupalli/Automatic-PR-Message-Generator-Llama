@@ -10,47 +10,39 @@ def generate_pr_description(diff_content, pr_number):
         print("❌ Error: LLAMA_API_URL is not set.")
         return "Error: LLAMA_API_URL is not configured."
 
-    prompt = f" Generate a detailed pull request description based on the following information:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}. Just summarize the changes using Description."
-    prompt += """Next, 
-**Analyze the Pull Request details and assign a score between 0 and 100 for each category listed below**. Use the provided rubric for guidance. Ensure that scores reflect the quality and specifics of the Pull Request, and do not bias scores toward high values without sufficient justification. Follow the exact format given below:
 
-#### **Scoring Rubric**:
-- **100**: Excellent, exceeds all expectations, no areas for improvement.  
-- **80–99**: Very good, meets most expectations with minor improvements needed.  
-- **60–79**: Satisfactory, meets minimum expectations but requires moderate improvement.  
-- **40–59**: Below average, significant improvements needed.  
-- **0–39**: Poor, fails to meet expectations.
+  prompt += 
+"""
+Analyze the given code changes and generate a detailed pull request description as a summary.
 
-#### **Scoring Categories**:
-- **Category 1: Impact Analysis**  
-  Evaluate the impact of the Pull Request on the overall codebase using these factors:  
-  - **Bug Fix**: How effectively it resolves existing issues or bugs.  
-  - **Usefulness**: The value the changes add to the project.  
-  - **New Functionality**: How the new features enhance the system.  
-  - **Maintainability**: The impact on the code’s maintainability and long-term stability.  
+And give a overall score based on Readability, Maintainability and Clarity. 
 
-  **Impact Score**: Overall score based on Bug Fix, Usefulness, New Functionality, and Maintainability [0–100]  
 
----
 
-- **Category 2: Code Quality**  
-  Assess the overall quality of the code using factors such as readability, structure, and adherence to best practices.  
+The return format should be in the below json format:
+{
+    "readability_score": “<score within 1-3>”,
+    "output": "<text explanation of the reason for the scoring and improvements that can apply>”
+} 
 
-  **Code Quality Score**: [0–100]  
+Be careful while analyzing the code. Make sure to identify all the code changes and double-check the answer. Use the rubric and scoring criteria below while assigning the score.
 
----
-
-- **Category 3: Security**  
-  Identify any security vulnerabilities or risks introduced by the code (e.g., hardcoded credentials, unsafe serialization, SQL injection).  
-
-  **Security Score**: [0–100]  
-
----
-
-- **Category 4: Creativity**  
-  Determine originality and innovation. Unique and creative code gets a high score; unoriginal or heavily copied code gets a low score.  
-
-  **Creativity Score**: [0–100]  
+—
+"""
+  prompt+=f" These are the code changes:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}."
+  prompt+=
+"""
+Checkboxes: 
+1. Clear Naming Conventions (Function and variable names are meaningful, self-explanatory and easy to understand.)
+2. Documentation (Code includes meaningful inline comments explaining logic and purpose.)
+3. Formatting & Styling (Code follows consistent indentation and spacing.)
+4. Maintainability (Code is easy to extend or modify.)
+5. Code Length (Functions are not excessively long; logic is broken down into smaller parts.)
+ 
+Scoring Criteria:
+- 3 (Excellent): Code meets all readability, maintainability, and clarity standards. Naming is clear, proper documentation, formatting is consistent, and code structure is easy to modify.  
+- 2 (moderate): Code is readable and maintainable but has a scope for improvement.  
+- 1 (Poor): Code is highly unreadable, with little no documentation, inconsistent naming.
 
 ---
 """
