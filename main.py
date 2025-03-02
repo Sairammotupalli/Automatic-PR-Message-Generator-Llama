@@ -5,6 +5,7 @@ import json
 
 LLAMA_API_URL = os.getenv("LLAMA_API_URL")
 
+def generate_pr_description(diff_content, pr_number):
     prompt = """
 Analyze the given code changes and generate a detailed pull request description as a summary.
 
