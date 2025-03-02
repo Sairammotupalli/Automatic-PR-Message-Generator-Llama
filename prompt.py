@@ -11,8 +11,8 @@ class Prompt:
         """
         Create the prompt text based on the diff analysis.
         """
-        prompt = """
-Analyze the given code changes and generate a detailed pull request description as a summary.
+        prompt = """Analyze
+the given code changes and generate a detailed pull request description as a summary.
 
 And give a overall score based on Readability, Maintainability and Clarity. 
 
@@ -29,9 +29,7 @@ Be careful while analyzing the code. Make sure to identify all the code changes 
 —
 """
        prompt+=f" These are the code changes:\n\nPR Summary:\nPR #{pr_number}\n\nCode Changes:\n{diff_content}."
-       prompt+=
-"""
-Checkboxes: 
+       prompt+= """Checkboxes: 
 1. Clear Naming Conventions (Function and variable names are meaningful, self-explanatory and easy to understand.)
 2. Documentation (Code includes meaningful inline comments explaining logic and purpose.)
 3. Formatting & Styling (Code follows consistent indentation and spacing.)
