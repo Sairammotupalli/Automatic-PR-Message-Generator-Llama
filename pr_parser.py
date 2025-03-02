@@ -18,6 +18,7 @@ class PRParser:
         self.changed_files = pr_data.get("changed_files", [])
         self.author = pr_data.get("author", "")
         self.created_at = pr_data.get("created_at", "")
+        self.language=pr_data.get("language")
 
     def get_summary(self):
         """
@@ -31,6 +32,8 @@ class PRParser:
         summary += f"Author: {self.author}\n"
         summary += f"Created At: {self.created_at}\n"
         summary += f"Changed Files: {len(self.changed_files)}\n"
+        summary += f"language: {self.language}\n"
+        summary += f"language: {self.language}\n"
         return summary
 
     def get_changed_files(self):
