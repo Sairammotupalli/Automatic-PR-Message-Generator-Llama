@@ -37,7 +37,7 @@ class Completion:
         }
         data = {
             "prompt": self.prompt,
-            "model": "mistral"
+            "model": "deepseek-r1"
         }
         
         try:
