@@ -4,7 +4,7 @@ import requests
 app = FastAPI()
 
 @app.post("/generate")
-async def generate_text(prompt: str, model: str = "llama3.3"):
+async def generate_text(prompt: str, model: str = "mistral"):
     """
     Endpoint to generate text using Ollama's Llama model API.
 
